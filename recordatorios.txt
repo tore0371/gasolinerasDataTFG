@@ -1,1 +1,7 @@
+PARA SABER LA IP DEL CONTENEDOR
 docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' clever_kalam
+
+PARA CREAR RESTAURAR LA BASE DE DATOS
+alter database your_db_name set offline with rollback immediate
+(se restaura la base de datos desde azure manegement studio)
+alter database your_db_name set online
