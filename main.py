@@ -5,7 +5,7 @@ from datetime import datetime
 
 
 # Establecemos conexion con la base de datos
-direccion_servidor = '172.17.0.2'
+direccion_servidor = '172.17.0.3'
 nombre_bd = 'gasolineras'
 nombre_usuario = 'sa'
 password = "yourStrong(!)Password"
@@ -65,18 +65,48 @@ def storeInDataBase(info):
         idMunicipio = int(value['IDMunicipio']) if value['IDMunicipio'] != '' else None
         idProvincia = int(value['IDProvincia']) if value['IDProvincia'] != '' else None
         idccaa = value['IDCCAA'] if value['IDCCAA'] != '' else None
-         
-         
+        
+        # Tratamos de insertar la estacion si no existe
         try:
-            count = cursor.execute("""insert into gasolineras(CP, FECHA,DIRECCION, HORARIO, LATITUD, LOCALIDAD, LONGITUD, MARGEN, MUNICIPIO, PRECIO_BIODIESEL, PRECIO_BIOETANOL, PRECIO_GAS_NATURAL_COMPRIMIDO, 
+            count = cursor.execute("""insert into GASOLINERAS(CP, DIRECCION, HORARIO, LATITUD, LOCALIDAD, 
+                                   LONGITUD, MARGEN, MUNICIPIO, ID_MUNICIPIO, ID_PROVINCIA, PROVINCIA, ROTULO, TIPO_VENTA)
+                                   values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                                   cp, direccion, horario, latitud, localidad, longitud, margen, municipio,
+                                   idMunicipio, idProvincia,provincia, rotulo, tipoVenta)
+            conexion.commit()
+
+        except Exception as e:
+            print("Estacion ya existe --> {}".format(e)) 
+         
+         
+         
+        # Obtenemos el id de la estacion para asignarselo a los registros
+        try:
+            count = cursor.execute("""
+                                   SELECT GASOLINERAS.ID_GASOLINERA
+                                   FROM GASOLINERAS
+                                   WHERE GASOLINERAS.LATITUD = ? AND GASOLINERAS.LONGITUD = ?
+                                   """,
+                                   latitud, longitud)
+            idGasolinera = cursor.fetchone()
+            idGasolinera = idGasolinera[0]
+
+        except Exception as e:
+            print("Error a la hora de obtener el id de la estacion a la que pertenece {}".format(e))
+        
+        
+        
+        
+        try:
+            count = cursor.execute("""insert into DATA_GASOLINERAS(ID_GASOLINERA, FECHA, PRECIO_BIODIESEL, PRECIO_BIOETANOL, PRECIO_GAS_NATURAL_COMPRIMIDO, 
             PRECIO_GAS_NATURAL_LICUADO, PRECIO_GASES_LICUADOS_DEL_PETROLEO, PRECIO_GASOLEO_A, PRECIO_GASOLEO_B, PRECIO_GASOLEO_PREMIUM, PRECIO_GASOLINA_95_E10, PRECIO_GASOLINA_95_E5, 
-            PRECIO_GASOLINA_95_E5_PREMIUM, PRECIO_GASOLINA_98_E10, PRECIO_GASOLINA_98_E5, PRECIO_HIDROGENO, PROVINCIA, REMISION, ROTULO, TIPO_VENTA, PORCENTAJE_BIOETANOL, PORCENTAJE_ESTER_METILICO, 
-            IDEESS, ID_MUNICIPIO, ID_PROVINCIA, IDCCAA) values(?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) """,
-            cp, fecha, direccion, horario, latitud, localidad, longitud, margen, municipio, precioBiodiesel, precioBioetanol, 
+            PRECIO_GASOLINA_95_E5_PREMIUM, PRECIO_GASOLINA_98_E10, PRECIO_GASOLINA_98_E5, PRECIO_HIDROGENO, REMISION, PORCENTAJE_BIOETANOL, PORCENTAJE_ESTER_METILICO, 
+            IDEESS, IDCCAA) values(?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) """,
+            idGasolinera, fecha,  precioBiodiesel, precioBioetanol, 
             precioGasNaturalComprimido, precioGasNaturalLicuado, precioGasesLicuadosDelPetroleo, precioGasoleoA, 
             precioGasoleoB, precioGasoleoPremium, precioGasolina95E10, precioGasolina95E5, precioGasolina95E5Premium, 
-            precioGasolina98E10, precioGasolina98E5, precioHidrogeno, provincia, remision, rotulo, tipoVenta, 
-            porcentajeBioetanol, porcentajeEsterMetilico, ideess, idMunicipio, idProvincia, idccaa)
+            precioGasolina98E10, precioGasolina98E5, precioHidrogeno, remision, 
+            porcentajeBioetanol, porcentajeEsterMetilico, ideess, idccaa)
             conexion.commit()
             print("Insertando datos de la consulta")
         except Exception as e:
