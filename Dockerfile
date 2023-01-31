@@ -27,4 +27,4 @@ RUN pip3 install pyodbc
 
 
 
-# RUN crontab -l | { cat; echo "0 8 * * * cd /home/gasolineras && /usr/local/bin/python3 /home/gasolineras/main.py"; } | crontab -
+RUN crontab -l | { cat; echo "0 8 * * * cd /home/gasolineras && /usr/local/bin/python3 /home/gasolineras/main.py"; } | crontab -

@@ -5,7 +5,7 @@ from datetime import datetime
 
 
 # Establecemos conexion con la base de datos
-direccion_servidor = '172.17.0.3'
+direccion_servidor = '172.17.0.2'
 nombre_bd = 'gasolineras'
 nombre_usuario = 'sa'
 password = "yourStrong(!)Password"
