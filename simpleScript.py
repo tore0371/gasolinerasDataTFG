@@ -16,7 +16,7 @@ def storeInDataBase(info):
     data = json.loads(info.text)
     for value in data["ListaEESSPrecio"]:
         if(value["Municipio"] == "Benavente") or (value["Municipio"] == "León") or (value["Localidad"] == "BAÑEZA (LA)"):
-            print("{} --- Precio --> {}".format(value['Municipio'], value['Precio Gasoleo A']))
+            print("{} --- Precio --> {}, Direccion --> {}".format(value['Municipio'], value['Precio Gasoleo A'], value['Dirección']))
             if value["Municipio"] == "León":
                 sumLeon += float(value['Precio Gasoleo A'].replace(",", "."))
                 contLeon += 1
